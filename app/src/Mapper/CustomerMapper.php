@@ -2,7 +2,7 @@
 
 namespace App\Mapper;
 
-// use App\Entity\Customer;
+use App\Entity\Customer;
 
 class CustomerMapper
 {

@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\CustomerRepository;
+use App\Repository\SalespersonRepository;
 use App\Mapper\CustomerMapper;
 
 /**
@@ -21,9 +22,10 @@ class ApiCustomerController extends AbstractController
 {
 	private $customerRepository;
 
-	public function __construct(CustomerRepository $customerRepository)
+	public function __construct(CustomerRepository $customerRepository, SalespersonRepository $salespersonRepository)
 	{
 		$this->customerRepository = $customerRepository;
+		$this->salespersonRepository = $salespersonRepository;
 	}
 
 	/**
@@ -31,7 +33,6 @@ class ApiCustomerController extends AbstractController
 	 */
 	public function getCustomers(): Response
 	{
-		// phpinfo();
 		$customers = $this->customerRepository->findAll();
 		if (!$customers) {
 			throw new HttpException(404, "Ressource not found");
@@ -48,9 +49,10 @@ class ApiCustomerController extends AbstractController
 		if (!$id) {
 			throw new HttpException(400, "Invalid id");
 		}
-		$customer = $this->customerRepository->findOneBy(['idCustomer' => $id]);
+		$customer = $this->customerRepository->findOneBy(['idcustomer' => $id]);
 		if (!$customer) {
-			throw new HttpException(404, "Ressource not found");
+			// throw new HttpException(404, "Ressource not found");
+            return new JsonResponse("Invalid parameter: id not found", 404);
 		}
 		$result = CustomerMapper::transform(array($customer));
 		return new JsonResponse($result);
@@ -64,10 +66,15 @@ class ApiCustomerController extends AbstractController
 		$data = json_decode($request->getContent(), true);
 
 		if (empty($data['Society']) || empty($data['IdSalesperson']) || empty($data['Credit'])) {
-			throw new NotFoundHttpException('Expecting mandatory parameters!');
+			// throw new NotFoundHttpException('Expecting mandatory parameters!');
+            return new JsonResponse('Expecting mandatory parameters!', 400);
 		} elseif ($data['IdSalesperson'] < 0) {
-			throw new HttpException(400, "Invalid parameter : idSalesperson must be positive integer");
+			// throw new HttpException(400, "Invalid parameter : idSalesperson must be positive integer");
+            return new JsonResponse("Invalid parameter : idSalesperson must be positive integer", 400);
 		}
+
+		$salesperson = $this->salespersonRepository->findOneBy(['idsalesperson'=>$data['IdSalesperson']]);
+		$data['IdSalesperson'] = $salesperson;
 
 		$newCustomer = CustomerMapper::getNewCustomer($data);
 
@@ -86,6 +93,7 @@ class ApiCustomerController extends AbstractController
 			throw new HttpException(400, "Invalid id");
 		}
 		$customer = $this->customerRepository->find($id);
+		
 		$data = json_decode($request->getContent(), true);
 
 		if (empty($data['Society']) || empty($data['IdSalesperson']) || empty($data['Credit'])) {
@@ -93,6 +101,9 @@ class ApiCustomerController extends AbstractController
 		} elseif ($data['IdSalesperson'] < 0) {
 			throw new HttpException(400, "Invalid parameter : idSalesperson must be positive integer");
 		}
+
+		$salesperson = $this->salespersonRepository->findOneBy(['idsalesperson'=>$data['IdSalesperson']]);
+		$data['IdSalesperson'] = $salesperson;		
 
 		$this->customerRepository->updateCustomer($customer, $data);
 
@@ -108,16 +119,17 @@ class ApiCustomerController extends AbstractController
 			throw new HttpException(400, "Invalid id");
 		}
 
-		$customer = $this->customerRepository->findOneBy(['idCustomer' => $id]);
+		$customer = $this->customerRepository->findOneBy(['idcustomer' => $id]);
 
 		if (!$customer) {
-			throw new HttpException(400, "Invalid parameter: id not found");
+			// throw new HttpException(400, "Invalid parameter: id not found");
+            return new JsonResponse("Invalid parameter: id not found", 404);
 		}
 
 		$this->customerRepository->removeCustomer($customer);
 
 		// check deletion ok
-		$customer = $this->customerRepository->findOneBy(['idCustomer' => $id]);
+		$customer = $this->customerRepository->findOneBy(['idcustomer' => $id]);
 		$result = !$customer ? ['status' => 'customer deleted'] : ['status' => 'deletion failed'];
 
 		return new JsonResponse($result);

@@ -74,9 +74,9 @@ class Customer
         return $this;
     }
 
-    public function getIdsalesperson(): ?Salesperson
+    public function getIdsalesperson(): ?int
     {
-        return $this->idsalesperson;
+        return $this->idsalesperson?->getIdsalesperson();
     }
 
     public function setIdsalesperson(?Salesperson $idsalesperson): self

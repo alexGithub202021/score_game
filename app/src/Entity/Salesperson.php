@@ -105,5 +105,10 @@ class Salesperson
         return $this;
     }
 
+    public function setIdsalesperson(?int $idsalesperson): self
+    {
+        $this->idsalesperson = $idsalesperson;
 
+        return $this;
+    }    
 }
