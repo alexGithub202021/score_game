@@ -44,4 +44,24 @@ class CustomerRepository extends ServiceEntityRepository
 
 		$this->manager->flush();
 	}
+
+	/**
+	 * Get the value of manager
+	 */ 
+	public function getManager()
+	{
+		return $this->manager;
+	}
+
+	/**
+	 * Set the value of manager
+	 *
+	 * @return  self
+	 */ 
+	public function setManager($manager)
+	{
+		$this->manager = $manager;
+
+		return $this;
+	}
 }

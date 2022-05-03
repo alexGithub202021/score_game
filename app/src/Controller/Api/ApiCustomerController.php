@@ -134,4 +134,18 @@ class ApiCustomerController extends AbstractController
 
 		return new JsonResponse($result);
 	}
+
+	/**
+	 * @Route("/countCustomers", methods="GET")
+	 */
+	public function countCustomers(): Response
+	{
+		$sql = "select count(*) from Customer where idcustomer = :id";
+		$id = 2103;
+		$stmt = $this->customerRepository->getManager()->getConnection()->prepare($sql);
+		$stmt->bindParam('id', $id);
+		$stmt->execute();
+
+		return new JsonResponse(intval($stmt->fetchOne()));
+	}	
 }
