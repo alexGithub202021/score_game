@@ -2,53 +2,55 @@ version: "3.2"
 
 services:
 
-  php_sf:
-    container_name: php_sf
-#    image: 15d55c4fd75d
+  php_game_score:
+    container_name: php_game_score
     build:
       context: './php/'
-#      dockerfile: ./php/Dockerfile
     ports:
       - "9000:9000"
     volumes:
-      - ./app:/var/www/sf
+      - ./back:/var/www/sf
       - ./php/conf/php.ini:/usr/local/etc/php/php.ini-production
 
-  mysql_sf:
-    container_name: mysql_sf
-    #    image: mysql
-    image: e3fcc9e1cc04
+  nginx_game_score:
+    container_name: nginx_game_score
+    image: nginx:stable-alpine
     ports:
-      - "3306:3306"
+      - "88:80"
+    volumes:
+      - ./back:/var/www/sf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php_game_score
+
+  ui_game_score:
+    container_name: ui_game_score
+    build:
+      context: './front'
+    ports:
+      - "3001:3000"
+
+  mysql_game_score:
+    container_name: mysql_game_score
+    image: mysql/mysql-server #M1 compatbibl
+    ports:
+      - "33060:3306"
     volumes:
       - ./mysql:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always # always restart unless stopped manually
     environment:
-      MYSQL_USER: root
+      MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: pwd
-      MYSQL_PASSWORD: pwd
-
-  nginx_sf2:
-    container_name: nginx_sf2
-    # image: 8c1bfa967ebf
-    image: nginx:stable-alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./app:/var/www/sf
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php_sf
-      - mysql_sf
+      MYSQL_ROOT_HOST: '%'
 
   phpmyadmin:
-    #    image: phpmyadmin/phpmyadmin
-    image: 6f9550cff175
+    container_name: phpmyadmin_game_score
+    image: phpmyadmin/phpmyadmin
     restart: always
     environment:
-      PMA_HOST: mysql_sf
-      PMA_USER:  root
+      PMA_HOST: mysql_game_score
+      PMA_USER: root
       PMA_PASSWORD: pwd
     ports:
-      - "8080:80"
+      - "8098:80"
