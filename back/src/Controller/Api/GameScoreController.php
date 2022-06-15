@@ -59,21 +59,21 @@ class GameScoreController extends AbstractController
 	}
 
 	/**
-	 * @Route("/score", methods="PATCH")
+	 * @Route("/score/{id}", methods="PATCH")
 	 */
-	public function updateScore(Request $request): Response
-	{
+	public function updateScore(Request $request, int $id): Response
+	{		
+		if (!$id) {
+			throw new JsonResponse("Invalid id", 400);
+		}
 		$data = json_decode($request->getContent(), true);
 
-		if (empty($data['idGame']) || empty($data['score'])) {
+		if (empty($data['score'])) {
 			return new JsonResponse('Expecting mandatory parameters!', 400);
-		} elseif ($data['idGame'] < 0) {
-			return new JsonResponse("Invalid parameter : idGame must be positive integer", 400);
 		}
 
 		try {
-			// $game = $this->gameRepository->findOneBy(['idteam1' => $data['idTeam1'], 'idteam2' => $data['idTeam2']]);
-			$game = $this->gameRepository->find(['idgame' => $data['idGame']]);
+			$game = $this->gameRepository->find(['idgame' => $id]);
 			if ($game) {
 				$this->gameRepository->updateScore($game, $data['score']);
 				return new JsonResponse("game score updated!", 200);

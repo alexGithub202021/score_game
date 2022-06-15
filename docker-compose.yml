@@ -28,7 +28,10 @@ services:
     build:
       context: './front'
     ports:
-      - "3001:3000"
+      - "3001:3000"    
+    volumes:
+      - "/app/node_modules"
+      - ./front:/app
 
   mysql_game_score:
     container_name: mysql_game_score

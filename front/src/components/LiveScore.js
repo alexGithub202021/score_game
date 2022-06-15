@@ -4,7 +4,7 @@ import Axios from "axios";
 export default function LiveScore({ games }) {
 
     const lastGameCreated = games[0];
-    
+
     var idGame = 0,
         team1 = "",
         team2 = "";
@@ -43,16 +43,14 @@ export default function LiveScore({ games }) {
     }
 
     const finishGame = () => {
-        const data = { 'idGame': idGame, 'score': "" + homeScore + ";" + awayScore + "" };
-        updateScore(data);
+        updateScore();
     }
 
-    async function updateScore(data) {
+    async function updateScore() {
         Axios({
             method: 'patch',
-            url: 'http://localhost:88/api/score',
+            url: 'http://localhost:88/api/score/' + idGame,
             data: {
-                idGame: idGame,
                 score: "" + homeScore + ";" + awayScore + ""
             }
         }).then(res => {
