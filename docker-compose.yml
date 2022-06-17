@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
 
-  mysql_game_score2:
+  mysql_game_score2:  
     container_name: mysql_game_score2
     image: mysql/mysql-server #M1 compatbibl
     ports:
@@ -16,26 +16,6 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql 
-
-  php_game_score2:
-    container_name: php_game_score2
-    build:
-      context: './back/'
-    ports:
-      - "9000:9000"
-    volumes:
-      - ./back:/var/www/sf
-
-  nginx_game_score2:
-    container_name: nginx_game_score2
-    image: nginx:stable-alpine
-    ports:
-      - "88:80"
-    volumes:
-      - ./back:/var/www/sf
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php_game_score2
 
   ui_game_score2:
     container_name: ui_game_score2
@@ -57,3 +37,23 @@ services:
       PMA_PASSWORD: pwd
     ports:
       - "8098:80"
+
+  php_game_score2:
+    container_name: php_game_score2
+    build:
+      context: './back/'
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./back:/var/www/sf
+
+  nginx_game_score2:
+    container_name: nginx_game_score2
+    image: nginx:stable-alpine
+    ports:
+      - "88:80"
+    volumes:
+      - ./back:/var/www/sf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php_game_score2
