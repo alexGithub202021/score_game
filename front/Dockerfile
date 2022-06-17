@@ -4,11 +4,12 @@ FROM node:alpine
 # set /app as work directory
 WORKDIR /app
 
-# copy your project files to work directoryCOPY . /app
+# copy your project files to work directory
+COPY . /app
 
 # install npm dependencies
 RUN yarn install
 
 # run your app
-# CMD ["yarn", "run", "start"]
-RUN yarn run start
+CMD ["yarn", "run", "start"]
+# RUN yarn run start

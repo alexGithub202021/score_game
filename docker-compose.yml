@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
 
-  mysql_game_score2:  
+  mysql_game_score2:
     container_name: mysql_game_score2
     image: mysql/mysql-server #M1 compatbibl
     ports:
@@ -15,18 +15,18 @@ services:
       MYSQL_ROOT_HOST: '%'
     volumes:
       - ./mysql:/var/lib/mysql
-      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql 
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
 
   ui_game_score2:
     container_name: ui_game_score2
     build:
       context: './front'
     ports:
-      - "3001:3000"    
+      - "3001:3000"
     volumes:
       - "/app/node_modules"
       - ./front:/app
-  
+
   phpmyadmin:
     container_name: phpmyadmin_game_score2
     image: phpmyadmin/phpmyadmin
@@ -46,6 +46,8 @@ services:
       - "9000:9000"
     volumes:
       - ./back:/var/www/sf
+      - ./init.sh:/init.sh
+    # entrypoint: sh -c "/init.sh"
 
   nginx_game_score2:
     container_name: nginx_game_score2
