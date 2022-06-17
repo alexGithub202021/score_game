@@ -13,7 +13,7 @@ RUN echo "\
 
 WORKDIR /var/www/sf
 
-COPY composer.json /var/www/sf
+COPY . /var/www/sf
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
